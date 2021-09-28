@@ -23,10 +23,11 @@ This mod uses the following resources:
 | Resource | Authors |
 |---------:|:-------|
 | `ASPOTA**.png` | arookas |
-| `spot_ring.wav` | SANDLOT |
+| `spot_ring.wav` | Sandlot |
 
 ## Usage
 
+You can download **aspot** by clicking the green **Code** button above and clicking **Download ZIP**.
 The mod is designed to be universal, so simply load it alongside your other mods to begin using it.
 
 ### Controls
@@ -44,14 +45,14 @@ The types of indicators are as follows:
 
 | Target | Indicator | `ASpotType` value |
 |-------:|:----------|-------------------|
-| Living monster | Red | `ASPOT_ENEMY` |
-| +SHOOTABLE actor | Red | `ASPOT_ENEMY` |
+| Living monster | Red | `ASPOT_MONSTER` |
+| +SHOOTABLE actor | Red | `ASPOT_MONSTER` |
 | Inventory item | Green | `ASPOT_PICKUP` |
 | +COUNTITEM actor | Green | `ASPOT_PICKUP` |
 | Other player | Blue | `ASPOT_FRIEND` |
 | +FRIENDLY actor | Blue | `ASPOT_FRIEND` |
 | Dead monster | White | `ASPOT_WORLD ` |
-| Regular actors | White | `ASPOT_WORLD`     |
+| Regular actor | White | `ASPOT_WORLD`     |
 | Level geometry | White | `ASPOT_WORLD`     |
 
 ### Customization
