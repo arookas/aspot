@@ -27,6 +27,7 @@ This mod uses the following resources:
 
 ## Usage
 
+You can download **aspot** by clicking the green **Code** button above and clicking **Download ZIP**.
 The mod is designed to be universal, so simply load it alongside your other mods to begin using it.
 
 ### Controls
