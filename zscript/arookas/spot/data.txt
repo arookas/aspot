@@ -22,7 +22,6 @@ struct ASpotSpotData play {
   Actor spot;
   Actor mob;
   ASpotType type;
-  FLineTraceData trace;
   ASpotStyle style;
 
   clearscope Actor GetActor() {
@@ -46,6 +45,8 @@ struct ASpotSpotData play {
   }
 
   bool Begin(ASpotStyle style, PlayerPawn player, double range) {
+    FLineTraceData trace;
+
     if (!player.LineTrace(
       player.angle, range, player.pitch,
       flags: TRF_ALLACTORS, offsetz: player.player.viewheight,
@@ -65,7 +66,7 @@ struct ASpotSpotData play {
     }
 
     ASpotType type = DeduceType(mob);
-    Actor spot = style.SpawnSpot(self, player);
+    Actor spot = style.SpawnSpot(self, player, trace, mob, type);
 
     if (spot == null) {
       return false;
@@ -74,8 +75,8 @@ struct ASpotSpotData play {
     End();
 
     self.spot = spot;
-    self.type = type;
     self.mob = mob;
+    self.type = type;
     self.style = style;
 
     return true;
@@ -83,11 +84,11 @@ struct ASpotSpotData play {
 
   private static ASpotType DeduceType(Actor mob) {
     if (mob) {
-      if (Inventory(mob) || mob.bCOUNTITEM) {
+      if ((mob is 'Inventory') || mob.bCOUNTITEM) {
         return ASPOT_PICKUP;
       }
 
-      if (PlayerPawn(mob) || mob.bFRIENDLY) {
+      if ((mob is 'PlayerPawn') || mob.bFRIENDLY) {
         return ASPOT_FRIEND;
       }
 
@@ -95,7 +96,6 @@ struct ASpotSpotData play {
         (mob.bISMONSTER && mob.bCOUNTKILL && mob.Health > 0)
         || mob.bSHOOTABLE
       ) {
-
         return ASPOT_MONSTER;
       }
     }

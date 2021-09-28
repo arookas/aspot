@@ -6,84 +6,34 @@
 
 // -------------------------------------------------------------------------- //
 
-class ASpotRingStyle : ASpotStyle {
-
-  protected TextureID mTex[ASPOT_NUM_TYPES];
+class ASpotRingStyle : ASpotBasicStyle {
 
   override string GetStyleName() const {
     return "ring";
   }
 
-  override bool Load() {
-    static const string TEXNAMES[] = {
-      "ASPOTAW1", "ASPOTAR1", "ASPOTAB1", "ASPOTAG1"
-    };
-
-    for (int i = 0; i < ASPOT_NUM_TYPES; ++i) {
-      string texname = TEXNAMES[i];
-
-      mTex[i] = TexMan.CheckForTexture(
-        texname, TexMan.Type_Any
-      );
-
-      if (!mTex[i].isValid()) {
-        Console.Printf("aspot: missing graphic '%s'", texname);
-        return false;
-      }
+  override string GetTexName(ASpotType type) const {
+    switch (type) {
+      case ASPOT_MONSTER: { return "ASPOTAR1"; }
+      case ASPOT_PICKUP:  { return "ASPOTAG1"; }
+      case ASPOT_FRIEND:  { return "ASPOTAB1"; }
+      default:            { return "ASPOTAW1"; }
     }
-
-    return true;
   }
 
-  override Actor SpawnSpot(
-    in ASpotSpotData spot,
-    PlayerPawn player
-  ) {
-    return Actor.Spawn('ASpotRingPuff', spot.trace.HitLocation);
+  override name GetSpotClass() const {
+    return 'ASpotRingPuff';
   }
 
-  override void DrawSpot(
-    in ASpotSpotData spot,
-    PlayerPawn player,
-    in ASpotScreen ascreen,
-    ASpotCamera acamera,
-    RenderEvent e
-  ) {
-    Actor mo = spot.GetActor();
-
-    if (!mo) {
-      return;
-    }
-
-    acamera.ProjectActorPosPortal(
-      mo, (0, 0, (mo.height / 2)), e.FracTic
-    );
-
-    if (!acamera.IsInFront()) {
-      return;
-    }
-
-    TextureID tex = mTex[spot.type];
-    vector2 pos = ascreen.SceneToWindow(acamera.ProjectToNormal());
-    Screen.DrawTexture(tex, true, pos.x, pos.y);
+  override vector2 GetDrawMargin() const {
+    return (80, 40);
   }
 
 }
 
 // -------------------------------------------------------------------------- //
 
-class ASpotRingPuff : Actor {
-
-  Default {
-
-    +NOINTERACTION
-    +NOGRAVITY
-    +NOBLOCKMAP
-
-    Radius 1;
-    Height 1;
-
-  }
+class ASpotRingPuff : ASpotBasicPuff {
 
   States {
 

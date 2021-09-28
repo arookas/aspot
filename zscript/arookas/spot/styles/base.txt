@@ -16,7 +16,10 @@ class ASpotStyle abstract {
 
   abstract play Actor SpawnSpot(
     in ASpotSpotData spot,
-    PlayerPawn player
+    PlayerPawn player,
+    in FLineTraceData trace,
+    Actor mob,
+    ASpotType type
   );
 
   abstract ui void DrawSpot(
@@ -26,6 +29,186 @@ class ASpotStyle abstract {
     ASpotCamera camera,
     RenderEvent e
   );
+
+  protected static vector2 Calc2DPos(
+    in ASpotScreen ascreen,
+    ASpotCamera acamera,
+    vector2 margin = (0, 0)
+  ) {
+    vector2 pos = ascreen.SceneToWindow(acamera.ProjectToNormal());
+
+    if (!acamera.IsInFront()) {
+      pos.x = Screen.GetWidth() - pos.x;
+
+      if (pos.y > Screen.GetHeight() / 2) {
+        pos.y = 0;
+      } else {
+        pos.y = Screen.GetHeight();
+      }
+    }
+
+    if (pos.x < margin.x) {
+      pos.x = margin.x;
+    }
+
+    if (pos.y < margin.y) {
+      pos.y = margin.y;
+    }
+
+    if (pos.x > Screen.GetWidth() - margin.x) {
+      pos.x = (Screen.GetWidth() - margin.x);
+    }
+
+    if (pos.y > Screen.GetHeight() - margin.y) {
+      pos.y = (Screen.GetHeight() - margin.y);
+    }
+
+    return pos;
+  }
+
+}
+
+// -------------------------------------------------------------------------- //
+// Basic style providing an 8-second indicator with no sounds.
+// This class can be derived from to make single-texture indicator very
+// quickly.
+
+class ASpotBasicStyle : ASpotStyle abstract {
+
+  protected TextureID mTex[ASPOT_NUM_TYPES];
+
+  //
+  // Tells the style what texture to use for a given indicator type.
+  // Used by Load() to load the resources for this indicator.
+  // Multiple spot types may share textures. The texture will be drawn
+  // at the image's origin, so make sure to set the image's X/Y offsets
+  // to center the indicator.
+  //
+  protected abstract string GetTexName(ASpotType type) const;
+
+  //
+  // [optional]
+  // Tells the style what actor to spawn to control indicator duration
+  // and 3D effects. By default, 'ASpotBasicPuff' will stick around for
+  // 8 seconds. The ping/spot goes away when this actor is destroyed.
+  // You can use e.g. TNT1A0 to make the indicator 2D-only with no 3D.
+  //
+  protected virtual name GetSpotClass() const {
+    return 'ASpotBasicPuff';
+  }
+
+  //
+  // [optional]
+  // Specifies the sound name to play when spotting. This may be blank to
+  // indicate no sound. If using a custom puff class, you can also control
+  // sounds using that actor instead and leave this blank. If non-empty,
+  // the sound name should match the logical name as defined in SNDINFO.
+  //
+  protected virtual string GetSpotSound() const {
+    return "";
+  }
+
+  //
+  // [optional]
+  // Controls how much space off the edge of the screen beyond which the
+  // indicator is clamped, measured in pixels (i.e. same units as Screen).
+  //
+  protected virtual vector2 GetDrawMargin() const {
+    return (0, 0);
+  }
+
+  //
+  // Loads the texture resources for the basic style.
+  // You may override this to load extra resources.
+  //
+  override bool Load() {
+    for (int i = 0; i < ASPOT_NUM_TYPES; ++i) {
+      string texname = GetTexName(i);
+      mTex[i] = TexMan.CheckForTexture(texname, TexMan.Type_Any);
+
+      if (!mTex[i].isValid()) {
+        Console.Printf("aspot: missing graphic '%s'", texname);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  //
+  // Spawns the puff actor indicated by GetSpotClass() at the trace location.
+  //
+  override Actor SpawnSpot(
+    in ASpotSpotData spot,
+    PlayerPawn player,
+    in FLineTraceData trace,
+    Actor mob,
+    ASpotType type
+  ) {
+    Actor puff = Actor.Spawn(GetSpotClass(), trace.HitLocation);
+
+    if (puff != null) {
+      string soundname = GetSpotSound();
+
+      if (soundname != "") {
+        puff.A_StartSound(soundname,
+          slot: CHAN_AUTO, flags: (CHANF_NOPAUSE | CHANF_UI | CHANF_OVERLAP)
+        );
+      }
+    }
+
+    return puff;
+  }
+
+  //
+  // Draws the indicator texture on the screen as indicated by GetTexName().
+  // GetDrawMargin() is also used to clamp the texture position within a
+  // subregion in the center of the screen.
+  //
+  override void DrawSpot(
+    in ASpotSpotData spot,
+    PlayerPawn player,
+    in ASpotScreen ascreen,
+    ASpotCamera acamera,
+    RenderEvent e
+  ) {
+    Actor mo = spot.GetActor();
+
+    if (mo == null) {
+      return;
+    }
+
+    acamera.ProjectActorPosPortal(
+      mo, (0, 0, (mo.height / 2)), e.FracTic
+    );
+
+    TextureID tex = mTex[spot.type];
+    vector2 pos = Calc2DPos(ascreen, acamera, GetDrawMargin());
+    Screen.DrawTexture(tex, true, pos.x, pos.y);
+  }
+
+}
+
+class ASpotBasicPuff : Actor {
+
+  Default {
+
+    +NOINTERACTION
+    +NOGRAVITY
+    +NOBLOCKMAP
+
+    Radius 1;
+    Height 1;
+
+  }
+
+  States {
+
+    Spawn:
+      TNT1 AAAAAAAA 35;
+      Stop;
+
+  }
 
 }
 
