@@ -1,0 +1,32 @@
+
+//
+// This file is part of ASPOT.
+// See README and LICENSE for details.
+//
+
+// -------------------------------------------------------------------------- //
+
+class ASpotStyle abstract {
+
+  abstract bool Load();
+
+  virtual string GetStyleName() const {
+    return self.GetClassName();
+  }
+
+  abstract play Actor SpawnSpot(
+    in ASpotSpotData spot,
+    PlayerPawn player
+  );
+
+  abstract ui void DrawSpot(
+    in ASpotSpotData spot,
+    PlayerPawn player,
+    in ASpotScreen screen,
+    ASpotCamera camera,
+    RenderEvent e
+  );
+
+}
+
+// -------------------------------------------------------------------------- //

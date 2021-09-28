@@ -1,0 +1,149 @@
+
+//
+// This file is part of ASPOT.
+// See README and LICENSE for details.
+//
+
+// -------------------------------------------------------------------------- //
+
+class ASpotManager : EventHandler {
+
+  protected bool mDefunct;
+  protected ASpotCameraGL mCamera;
+  protected ASpotScreen mScreen;
+  protected Array<ASpotStyle> mStyles;
+  protected ASpotSpotData mSpots[MAXPLAYERS];
+
+  protected int GetStyle(int pnum) const {
+    int id = 0; // default (ring)
+
+    CVar cvar = CVar.GetCVar('aspot_style', Players[pnum]);
+
+    if (cvar != null) {
+      name style = cvar.GetString();
+
+      for (int i = 0; i < mStyles.size(); ++i) {
+        name current = mStyles[i].GetStyleName();
+
+        if (style == current) {
+          id = i;
+          break;
+        }
+      }
+    }
+
+    return id;
+  }
+
+  override void WorldLoaded(WorldEvent e) {
+    mDefunct = false;
+
+    mCamera = new('ASpotCameraGL');
+
+    if (mCamera == null) {
+      Console.Printf("aspot: failed to create screen");
+      mDefunct = true;
+      return;
+    }
+
+    for (int i = 0; i < AllClasses.size(); ++i) {
+      if (!(AllClasses[i] is 'ASpotStyle')) {
+        continue;
+      }
+
+      if (AllClasses[i].IsAbstract()) {
+        continue;
+      }
+
+      let style = ASpotStyle(new(AllClasses[i]));
+
+      if (!style.Load()) {
+        Console.Printf(
+          "aspot: failed to load style '%s'",
+          AllClasses[i].GetClassName()
+        );
+
+        continue;
+      }
+
+      mStyles.push(style);
+    }
+
+    if (mStyles.size() == 0) {
+      mDefunct = true;
+      return;
+    }
+  }
+
+  override void NetworkProcess(ConsoleEvent e) {
+    if (mDefunct) {
+      return;
+    }
+
+    if (e.Name != "arookas_spot") {
+      return;
+    }
+
+    int pnum = e.Player;
+
+    if (pnum < 0 || pnum >= MAXPLAYERS) {
+      return;
+    }
+
+    if (!PlayerInGame[pnum]) {
+      return;
+    }
+
+    PlayerPawn player = Players[pnum].mo;
+
+    if (player == null) {
+      return;
+    }
+
+    int style = GetStyle(pnum);
+    mSpots[pnum].Begin(mStyles[style], player, 4096.0);
+  }
+
+  override void PlayerDisconnected(PlayerEvent e) {
+    int pnum = e.PlayerNumber;
+
+    if (pnum < 0 || pnum >= MAXPLAYERS) {
+      return;
+    }
+
+    mSpots[pnum].End();
+  }
+
+  override void RenderUnderlay(RenderEvent e) {
+    if (mDefunct) {
+      return;
+    }
+
+    mCamera.CacheResolution();
+    mCamera.CacheFov(Players[ConsolePlayer].fov);
+    mCamera.OrientForRenderUnderlay(e);
+    mCamera.BeginProjection();
+    mScreen.FromHud();
+
+    for (int i = 0; i < MAXPLAYERS; ++i) {
+      if (mSpots[i].spot == null) {
+        continue;
+      }
+
+      if (!PlayerInGame[i]) {
+        continue;
+      }
+
+      PlayerPawn player = Players[i].mo;
+
+      if (player == null) {
+        continue;
+      }
+
+      mSpots[i].style.DrawSpot(mSpots[i], player, mScreen, mCamera, e);
+    }
+  }
+
+}
+
+// -------------------------------------------------------------------------- //

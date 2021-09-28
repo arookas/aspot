@@ -1,0 +1,108 @@
+
+//
+// This file is part of ASPOT.
+// See README and LICENSE for details.
+//
+
+// -------------------------------------------------------------------------- //
+
+enum ASpotType {
+
+  ASPOT_WORLD,
+  ASPOT_MONSTER,
+  ASPOT_FRIEND,
+  ASPOT_PICKUP,
+
+  ASPOT_NUM_TYPES
+
+}
+
+struct ASpotSpotData play {
+
+  Actor spot;
+  Actor mob;
+  ASpotType type;
+  FLineTraceData trace;
+  ASpotStyle style;
+
+  clearscope Actor GetActor() {
+    Actor actor = null;
+
+    if (spot) {
+      actor = spot;
+
+      if (mob) {
+        actor = mob;
+      }
+    }
+
+    return actor;
+  }
+
+  void End() {
+    if (spot) {
+      spot.Destroy();
+    }
+  }
+
+  bool Begin(ASpotStyle style, PlayerPawn player, double range) {
+    if (!player.LineTrace(
+      player.angle, range, player.pitch,
+      flags: TRF_ALLACTORS, offsetz: player.player.viewheight,
+      data: trace
+    )) {
+      return false;
+    }
+
+    if (trace.HitType == TRACE_HitNone) {
+      return false;
+    }
+
+    Actor mob = null;
+
+    if (trace.HitType == TRACE_HitActor) {
+      mob = trace.HitActor;
+    }
+
+    ASpotType type = DeduceType(mob);
+    Actor spot = style.SpawnSpot(self, player);
+
+    if (spot == null) {
+      return false;
+    }
+
+    End();
+
+    self.spot = spot;
+    self.type = type;
+    self.mob = mob;
+    self.style = style;
+
+    return true;
+  }
+
+  private static ASpotType DeduceType(Actor mob) {
+    if (mob) {
+      if (Inventory(mob) || mob.bCOUNTITEM) {
+        return ASPOT_PICKUP;
+      }
+
+      if (PlayerPawn(mob) || mob.bFRIENDLY) {
+        return ASPOT_FRIEND;
+      }
+
+      if (
+        (mob.bISMONSTER && mob.bCOUNTKILL && mob.Health > 0)
+        || mob.bSHOOTABLE
+      ) {
+
+        return ASPOT_MONSTER;
+      }
+    }
+
+    return ASPOT_WORLD;
+  }
+
+}
+
+// -------------------------------------------------------------------------- //

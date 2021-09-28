@@ -1,0 +1,105 @@
+
+//
+// This file is part of ASPOT.
+// See README and LICENSE for details.
+//
+
+// -------------------------------------------------------------------------- //
+
+class ASpotRingStyle : ASpotStyle {
+
+  protected TextureID mTex[ASPOT_NUM_TYPES];
+
+  override string GetStyleName() const {
+    return "ring";
+  }
+
+  override bool Load() {
+    static const string TEXNAMES[] = {
+      "ASPOTAW1", "ASPOTAR1", "ASPOTAB1", "ASPOTAG1"
+    };
+
+    for (int i = 0; i < ASPOT_NUM_TYPES; ++i) {
+      string texname = TEXNAMES[i];
+
+      mTex[i] = TexMan.CheckForTexture(
+        texname, TexMan.Type_Any
+      );
+
+      if (!mTex[i].isValid()) {
+        Console.Printf("aspot: missing graphic '%s'", texname);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  override Actor SpawnSpot(
+    in ASpotSpotData spot,
+    PlayerPawn player
+  ) {
+    return Actor.Spawn('ASpotRingPuff', spot.trace.HitLocation);
+  }
+
+  override void DrawSpot(
+    in ASpotSpotData spot,
+    PlayerPawn player,
+    in ASpotScreen ascreen,
+    ASpotCamera acamera,
+    RenderEvent e
+  ) {
+    Actor mo = spot.GetActor();
+
+    if (!mo) {
+      return;
+    }
+
+    acamera.ProjectActorPosPortal(
+      mo, (0, 0, (mo.height / 2)), e.FracTic
+    );
+
+    if (!acamera.IsInFront()) {
+      return;
+    }
+
+    TextureID tex = mTex[spot.type];
+    vector2 pos = ascreen.SceneToWindow(acamera.ProjectToNormal());
+    Screen.DrawTexture(tex, true, pos.x, pos.y);
+  }
+
+}
+
+// -------------------------------------------------------------------------- //
+
+class ASpotRingPuff : Actor {
+
+  Default {
+
+    +NOINTERACTION
+    +NOGRAVITY
+    +NOBLOCKMAP
+
+    Radius 1;
+    Height 1;
+
+  }
+
+  States {
+
+    Spawn:
+      TNT1 AAAA 35 nodelay {
+        A_StartSound("arookas/spot/ring",
+          slot: CHAN_AUTO,
+          flags: (CHANF_NOPAUSE | CHANF_UI | CHANF_OVERLAP),
+          attenuation: ATTN_NONE
+        );
+      }
+      TNT1 AAAAAA 35;
+      Stop;
+
+  }
+
+}
+
+// -------------------------------------------------------------------------- //

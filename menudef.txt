@@ -1,0 +1,16 @@
+
+//
+// This file is part of ASPOT.
+// See README and LICENSE for details.
+//
+
+// -------------------------------------------------------------------------- //
+
+AddOptionMenu "ChatControlsMenu" {
+
+  StaticText ""
+  Control "Spot", "arookas_spot"
+
+}
+
+// -------------------------------------------------------------------------- //

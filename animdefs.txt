@@ -1,0 +1,50 @@
+
+//
+// This file is part of ASPOT.
+// See README and LICENSE for details.
+//
+
+// -------------------------------------------------------------------------- //
+// STYLE: "RING"
+
+texture ASPOTAW1 // WHITE
+  pic ASPOTAW1 tics 2
+  pic ASPOTAW2 tics 2
+  pic ASPOTAW3 tics 2
+  pic ASPOTAW4 tics 2
+  pic ASPOTAW5 tics 2
+  pic ASPOTAW6 tics 2
+  pic ASPOTAW7 tics 2
+  pic ASPOTAW8 tics 2
+
+texture ASPOTAR1 // RED
+  pic ASPOTAR1 tics 2
+  pic ASPOTAR2 tics 2
+  pic ASPOTAR3 tics 2
+  pic ASPOTAR4 tics 2
+  pic ASPOTAR5 tics 2
+  pic ASPOTAR6 tics 2
+  pic ASPOTAR7 tics 2
+  pic ASPOTAR8 tics 2
+
+texture ASPOTAG1 // GREEN
+  pic ASPOTAG1 tics 2
+  pic ASPOTAG2 tics 2
+  pic ASPOTAG3 tics 2
+  pic ASPOTAG4 tics 2
+  pic ASPOTAG5 tics 2
+  pic ASPOTAG6 tics 2
+  pic ASPOTAG7 tics 2
+  pic ASPOTAG8 tics 2
+
+texture ASPOTAB1 // BLUE
+  pic ASPOTAB1 tics 2
+  pic ASPOTAB2 tics 2
+  pic ASPOTAB3 tics 2
+  pic ASPOTAB4 tics 2
+  pic ASPOTAB5 tics 2
+  pic ASPOTAB6 tics 2
+  pic ASPOTAB7 tics 2
+  pic ASPOTAB8 tics 2
+
+// -------------------------------------------------------------------------- //
