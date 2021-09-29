@@ -81,7 +81,7 @@ This class exposes a new interface and offloads most of the boilerplate:
 
 | Function | Scope | Description |
 |---------:|-------|-------------|
-| `GetTexName` | `data` | Specifies the texture to use for a given `ASpotType`. See [Behavior] for the full list of spot types. |
+| `GetTexName` | `data` | Specifies the texture to use for a given `ASpotType`. See [Behavior](#Behavior) for the full list of spot types. |
 | `GetSpotClass` | `data` | The class of the spot actor. Defaults to `ASpotBasicPuff`, which lasts for 8 seconds. |
 | `GetSpotSound` | `data` | Override this to add a sound to the spot. By default, no sound will be played. This should be the logical name as specified in SNDINFO. |
 | `GetDrawMargin` | `data` | Optional `vector2` margin on the edges of the screen for the 2D indicator texture. The graphic will clamp to this border. Units are same as in `Screen`. |
