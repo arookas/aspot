@@ -39,10 +39,10 @@ class ASpotRingPuff : ASpotBasicPuff {
 
     Spawn:
       TNT1 AAAA 35 nodelay {
-        A_StartSound("arookas/spot/ring",
-          slot: CHAN_AUTO,
+        A_StartSound(
+          "arookas/spot/ring", slot: CHAN_AUTO,
           flags: (CHANF_NOPAUSE | CHANF_UI | CHANF_OVERLAP),
-          attenuation: ATTN_NONE
+          volume: 0.7, attenuation: ATTN_NONE
         );
       }
       TNT1 AAAAAA 35;
