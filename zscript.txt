@@ -13,4 +13,5 @@ version "4.5"
 #include "zscript/arookas/spot/projection.txt"
 
 #include "zscript/arookas/spot/styles/base.txt"
+#include "zscript/arookas/spot/styles/icon.txt"
 #include "zscript/arookas/spot/styles/ring.txt"
