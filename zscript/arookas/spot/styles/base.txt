@@ -5,15 +5,49 @@
 //
 
 // -------------------------------------------------------------------------- //
+// Base class for all indicator styles. Derive from this to create advanced
+// styles and logic. See ASpotBasicStyle to quickly create simple styles.
 
 class ASpotStyle abstract {
 
-  abstract bool Load();
+  //
+  // [optional]
+  // Used by the system when initializing the style. If the style needs to
+  // cache any resource references or perform calculations, this is the place
+  // to do it. The return value indicates success (true) or failure (false);
+  // if the style fails to load, selecting it in the options will be fallback
+  // to the builtin "ring" style. The default implementation does nothing.
+  //
+  virtual bool Load() {
+    return true;
+  }
 
+  //
+  // [optional]
+  // Gives the name to this style. Used to identify this style by the
+  // `aspot_style` CVAR. By default, the class name is used. It's best
+  // to come up with a unique name to help prevent multiple styles with
+  // conflicting names.
+  //
   virtual string GetStyleName() const {
     return self.GetClassName();
   }
 
+  //
+  // Called when the spot is triggered. This function spawns the actor used
+  // to track the location and duration of the spot. When the actor returned
+  // by this function is destroyed, the indicator will go away. This actor is
+  // also destroyed automatically when the associated player disconnects.
+  //
+  // Parameters:
+  //       spot - active spot control structure. doesn't contain much useful
+  //              info for this function yet but is reserved for future
+  //              extensions.
+  //     player - the player who is sending the ping.
+  //      trace - data from the line trace.
+  //        mob - the actor that will tracked with this ping. may be null.
+  //       type - the spot/ping type. indicates enemy, ally, item, etc.
+  //
   abstract play Actor SpawnSpot(
     in ASpotSpotData spot,
     PlayerPawn player,
@@ -35,32 +69,31 @@ class ASpotStyle abstract {
     ASpotCamera acamera,
     vector2 margin = (0, 0)
   ) {
+    vector2 surface = (Screen.GetWidth(), Screen.GetHeight());
     vector2 pos = ascreen.SceneToWindow(acamera.ProjectToNormal());
 
     if (!acamera.IsInFront()) {
-      pos.x = Screen.GetWidth() - pos.x;
+      vector2 ipos = (surface - pos);
+      vector2 mid = (surface * 0.5);
+      vector2 unit = (ipos - mid).Unit();
 
-      if (pos.y > Screen.GetHeight() / 2) {
-        pos.y = 0;
-      } else {
-        pos.y = Screen.GetHeight();
-      }
+      pos = (mid + unit * max(surface.X, surface.Y));
     }
 
-    if (pos.x < margin.x) {
-      pos.x = margin.x;
+    if (pos.X < margin.X) {
+      pos.X = margin.X;
     }
 
-    if (pos.y < margin.y) {
-      pos.y = margin.y;
+    if (pos.Y < margin.Y) {
+      pos.Y = margin.Y;
     }
 
-    if (pos.x > Screen.GetWidth() - margin.x) {
-      pos.x = (Screen.GetWidth() - margin.x);
+    if (pos.X > surface.X - margin.X) {
+      pos.X = (surface.X - margin.X);
     }
 
-    if (pos.y > Screen.GetHeight() - margin.y) {
-      pos.y = (Screen.GetHeight() - margin.y);
+    if (pos.Y > surface.Y - margin.Y) {
+      pos.Y = (surface.Y - margin.Y);
     }
 
     return pos;
@@ -75,7 +108,9 @@ class ASpotStyle abstract {
 
 class ASpotBasicStyle : ASpotStyle abstract {
 
-  protected TextureID mTex[ASPOT_NUM_TYPES];
+  //
+  // INTERFACE
+  //
 
   //
   // Tells the style what texture to use for a given indicator type.
@@ -118,9 +153,11 @@ class ASpotBasicStyle : ASpotStyle abstract {
   }
 
   //
-  // Loads the texture resources for the basic style.
-  // You may override this to load extra resources.
+  // IMPLEMENTATION
   //
+
+  protected TextureID mTex[ASPOT_NUM_TYPES];
+
   override bool Load() {
     for (int i = 0; i < ASPOT_NUM_TYPES; ++i) {
       string texname = GetTexName(i);
@@ -135,9 +172,6 @@ class ASpotBasicStyle : ASpotStyle abstract {
     return true;
   }
 
-  //
-  // Spawns the puff actor indicated by GetSpotClass() at the trace location.
-  //
   override Actor SpawnSpot(
     in ASpotSpotData spot,
     PlayerPawn player,
@@ -160,11 +194,6 @@ class ASpotBasicStyle : ASpotStyle abstract {
     return puff;
   }
 
-  //
-  // Draws the indicator texture on the screen as indicated by GetTexName().
-  // GetDrawMargin() is also used to clamp the texture position within a
-  // subregion in the center of the screen.
-  //
   override void DrawSpot(
     in ASpotSpotData spot,
     PlayerPawn player,
@@ -184,7 +213,7 @@ class ASpotBasicStyle : ASpotStyle abstract {
 
     TextureID tex = mTex[spot.type];
     vector2 pos = Calc2DPos(ascreen, acamera, GetDrawMargin());
-    Screen.DrawTexture(tex, true, pos.x, pos.y);
+    Screen.DrawTexture(tex, true, pos.X, pos.Y);
   }
 
 }
@@ -205,7 +234,7 @@ class ASpotBasicPuff : Actor {
   States {
 
     Spawn:
-      TNT1 AAAAAAAA 35;
+      TNT1 AAAAAAAA 35; // 8 seconds
       Stop;
 
   }
