@@ -40,6 +40,7 @@ struct ASpotSpotData play {
 
   void End() {
     if (spot) {
+      spot.A_RemoveChildren(true, RMVF_EVERYTHING);
       spot.Destroy();
     }
   }
@@ -88,7 +89,7 @@ struct ASpotSpotData play {
         return ASPOT_PICKUP;
       }
 
-      if ((mob is 'PlayerPawn') || mob.bFRIENDLY) {
+      if (mob.Health > 0 && (mob is 'PlayerPawn' || mob.bFRIENDLY)) {
         return ASPOT_FRIEND;
       }
 
