@@ -12,7 +12,7 @@ This mod uses a modified [_LibEye_](https://forum.zdoom.org/viewtopic.php?f=105&
 the notice has been included [here](./zscript/arookas/spot/projection.txt).
 For all other code, see the [LICENSE](./LICENSE.md) file.
 
-Take a look at these wonderful people:
+Take a moment to appreciate these beautiful people:
 
 | **Greyfalll** | **Accensus** &bullet; **phantombeta** | **KeksDose** |
 |:-:|:-:|:-:|
@@ -22,7 +22,8 @@ This mod uses the following resources:
 
 | Resource | Authors |
 |---------:|:-------|
-| `ASPOTA**.png` | arookas |
+| `ASPOT**.png` | arookas |
+| `ARNG**.png` | arookas |
 | `spot_ring.wav` | Sandlot |
 
 ## Usage
@@ -52,13 +53,19 @@ The types of indicators are as follows:
 | Other player | Blue | `ASPOT_FRIEND` |
 | +FRIENDLY actor | Blue | `ASPOT_FRIEND` |
 | Dead monster | White | `ASPOT_WORLD ` |
-| Regular actor | White | `ASPOT_WORLD`     |
-| Level geometry | White | `ASPOT_WORLD`     |
+| Regular actor | White | `ASPOT_WORLD` |
+| Level geometry | White | `ASPOT_WORLD` |
 
 ### Customization
 
 The indicators can be configured using the `aspot_style` CVAR.
-By default, this the builtin "ring" style.
+**aspot** provides the following styles by default:
+
+| Name | Description |
+|-----:|-------------|
+| `ring` | (default) Simple textured ring animation with color coding and sound. Based off of _Earth Defense Force_. |
+| `icon` | More advanced indicator with icons, color coding, name tags, and console logs. Based off of _Risk of Rain 2_. |
+
 More styles can be added as submods by implementing the ZScript `ASpotStyle` interface.
 
 The interface has the following functions:
@@ -70,7 +77,17 @@ The interface has the following functions:
 | `SpawnSpot` | `play` | Spawns the 3D actor used to position the indicator. The actor returned by this function controls the indicator duration and sounds. |
 | `DrawSpot` | `ui` | Draws the 2D indicator on the player's screen. This function controls the indicator appearance. |
 
-> **Note:** See the [builtin style](./zscript/arookas/spot/styles/ring.txt) for an example implementation.
+For simple styles that use a 2D texture and sound, you can use the `ASpotBasicStyle` class instead.
+This class exposes a new interface and offloads most of the boilerplate:
+
+| Function | Scope | Description |
+|---------:|-------|-------------|
+| `GetTexName` | `data` | Specifies the texture to use for a given `ASpotType`. See [Behavior] for the full list of spot types. |
+| `GetSpotClass` | `data` | The class of the spot actor. Defaults to `ASpotBasicPuff`, which lasts for 8 seconds. |
+| `GetSpotSound` | `data` | Override this to add a sound to the spot. By default, no sound will be played. This should be the logical name as specified in SNDINFO. |
+| `GetDrawMargin` | `data` | Optional `vector2` margin on the edges of the screen for the 2D indicator texture. The graphic will clamp to this border. Units are same as in `Screen`. |
+
+> **Note:** See the [builtin "ring" style](./zscript/arookas/spot/styles/ring.txt) for an example implementation.
 
 Once a custom style is defined, load the mod alongside **aspot** and set your `aspot_style` CVAR to the name of the custom style.
 If the chosen style cannot be found (e.g. its containing mod is no longer loaded), or an error occurs when initializing the style, the style will default to the builtin "ring" style.
