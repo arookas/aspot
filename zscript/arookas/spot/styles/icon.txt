@@ -203,7 +203,7 @@ class ASpotIconRun : Actor {
         if (tracer != null) {
           ring.Warp(
             tracer, zofs: (tracer.Height / 2),
-            flags: WARPF_COPYINTERPOLATION
+            flags: WARPF_INTERPOLATE
           );
         }
       }
@@ -245,7 +245,7 @@ class ASpotIconRunRing : Actor {
         if (tracer != null) {
           Warp(
             tracer, zofs: (tracer.Height / 2),
-            flags: WARPF_COPYINTERPOLATION
+            flags: WARPF_INTERPOLATE
           );
         }
 
@@ -295,7 +295,7 @@ class ASpotIconDot : Actor {
         if (tracer != null) {
           ring.Warp(
             tracer, zofs: (tracer.Height / 2),
-            flags: WARPF_COPYINTERPOLATION
+            flags: WARPF_INTERPOLATE
           );
         }
       }
@@ -337,7 +337,7 @@ class ASpotIconDotRing : Actor {
         if (tracer != null) {
           Warp(
             tracer, zofs: (tracer.Height / 2),
-            flags: WARPF_COPYINTERPOLATION
+            flags: WARPF_INTERPOLATE
           );
         }
 
@@ -371,7 +371,7 @@ class ASpotIconAttack : Actor {
   override void Tick() {
     super.Tick();
 
-    if (tracer != null) {
+    if (tracer != null && !(tracer is 'PlayerPawn')) {
       self.sprite  = tracer.sprite;
       self.frame   = tracer.frame;
       self.scale   = tracer.scale;
@@ -383,7 +383,7 @@ class ASpotIconAttack : Actor {
       self.bFORCEYBILLBOARD = tracer.bFORCEYBILLBOARD;
       self.bFORCEXYBILLBOARD = tracer.bFORCEXYBILLBOARD;
 
-      Warp(tracer, flags: (WARPF_COPYVELOCITY | WARPF_COPYINTERPOLATION));
+      Warp(tracer, flags: (WARPF_COPYVELOCITY | WARPF_INTERPOLATE));
     }
   }
 
