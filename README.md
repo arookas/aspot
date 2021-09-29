@@ -44,7 +44,7 @@ Each player can have only one active spot at a time; activating the command agai
 
 The types of indicators are as follows:
 
-| Target | Indicator | `ASpotType` value |
+| Target | Indicator † | `ASpotType` value |
 |-------:|:----------|-------------------|
 | Living monster | Red | `ASPOT_MONSTER` |
 | +SHOOTABLE actor | Red | `ASPOT_MONSTER` |
@@ -55,6 +55,9 @@ The types of indicators are as follows:
 | Dead monster | White | `ASPOT_WORLD ` |
 | Regular actor | White | `ASPOT_WORLD` |
 | Level geometry | White | `ASPOT_WORLD` |
+
+> **†** Colors are based on the builtin "ring" style.
+> Other styles may use different colors.
 
 ### Customization
 
