@@ -24,7 +24,7 @@ class ASpotIconStyle : ASpotStyle {
     return "icon";
   }
 
-  override bool Load() {
+  override bool LoadStyle() {
     static const string TEXNAMES[] = {
       "ASPOTRUN", "ASPOTDOT", "ASPOTATK"
     };

@@ -59,21 +59,20 @@ The types of indicators are as follows:
 ### Customization
 
 The indicators can be configured using the `aspot_style` CVAR.
-**aspot** provides the following styles by default:
+**aspot** provides the following builtin styles:
 
-| Name | Description |
-|-----:|-------------|
-| `ring` | (default) Simple textured ring animation with color coding and sound. Based off of _Earth Defense Force_. |
-| `icon` | More advanced indicator with icons, color coding, name tags, and console logs. Based off of _Risk of Rain 2_. |
+| Name |   | Origin | Description |
+|-----:|:-:|--------|-------------|
+| `ring` | (default) | _Earth Defense Force_ | Simple animated ring indicator with color coding and sound. |
+| `icon` | | _Risk of Rain 2_ | More advanced indicator with icons, color coding, name tags, and console logging. |
 
 More styles can be added as submods by implementing the ZScript `ASpotStyle` interface.
-
 The interface has the following functions:
 
 | Function | Scope | Description |
 |---------:|-------|-------------|
 | `GetStyleName` | `data` | Returns the name of the style. Used by the `aspot_style` CVAR to identify the style. The default behavior returns the class name. |
-| `Load` | `data` | Used to initialize any resources and data used by the style. Returns `true` if successfully loaded and `false` upon error. |
+| `LoadStyle` | `data` | Used to initialize any resources and data used by the style. Returns `true` if successfully loaded and `false` upon error. |
 | `SpawnSpot` | `play` | Spawns the 3D actor used to position the indicator. The actor returned by this function controls the indicator duration and sounds. |
 | `DrawSpot` | `ui` | Draws the 2D indicator on the player's screen. This function controls the indicator appearance. |
 

@@ -57,7 +57,7 @@ class ASpotManager : EventHandler {
 
       let style = ASpotStyle(new(AllClasses[i]));
 
-      if (!style.Load()) {
+      if (!style.LoadStyle()) {
         Console.Printf(
           "aspot: failed to load style '%s'",
           AllClasses[i].GetClassName()

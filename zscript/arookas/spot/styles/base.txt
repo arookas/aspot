@@ -18,7 +18,7 @@ class ASpotStyle abstract {
   // if the style fails to load, selecting it in the options will be fallback
   // to the builtin "ring" style. The default implementation does nothing.
   //
-  virtual bool Load() {
+  virtual bool LoadStyle() {
     return true;
   }
 
@@ -114,7 +114,7 @@ class ASpotBasicStyle : ASpotStyle abstract {
 
   //
   // Tells the style what texture to use for a given indicator type.
-  // Used by Load() to load the resources for this indicator.
+  // Used by LoadStyle() to load the resources for this indicator.
   // Multiple spot types may share textures. The texture will be drawn
   // at the image's origin, so make sure to set the image's X/Y offsets
   // to center the indicator.
@@ -158,7 +158,7 @@ class ASpotBasicStyle : ASpotStyle abstract {
 
   protected TextureID mTex[ASPOT_NUM_TYPES];
 
-  override bool Load() {
+  override bool LoadStyle() {
     for (int i = 0; i < ASPOT_NUM_TYPES; ++i) {
       string texname = GetTexName(i);
       mTex[i] = TexMan.CheckForTexture(texname, TexMan.Type_Any);
